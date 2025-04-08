@@ -1,0 +1,13 @@
+{
+    "AlphaBetaMax_vs_RandomAgent": {
+        "red_agent": "AlphaBetaMax",
+        "black_agent": "RandomAgent",
+        "wins_red": 0,
+        "wins_black": 0,
+        "average_moves_red": 7.5,
+        "average_moves_black": 7.5,
+        "total_games": 2,
+        "average_time_red": 35.049142937499994,
+        "average_time_black": 3.954760290999957
+    }
+}
