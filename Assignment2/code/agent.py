@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Bellon Matthieu 14972000
+# Raymackers Théo 09592000
 import math
 import time
 import random

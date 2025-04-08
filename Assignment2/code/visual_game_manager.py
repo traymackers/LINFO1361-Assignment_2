@@ -79,12 +79,12 @@ class VisualGameManager:
         pygame.display.set_caption("Fenix")
 
         self.pieces_images = {
-            3: pygame.image.load("Assignment2\code\pngs\king_red.png"),
-            2: pygame.image.load("Assignment2\code\pngs\general_red.png"),
-            1: pygame.image.load("Assignment2\code\pngs\soldier_red.png"),
-            -1: pygame.image.load("Assignment2\code\pngs\soldier_black.png"),
-            -2: pygame.image.load("Assignment2\code\pngs\general_black.png"),
-            -3: pygame.image.load("Assignment2\code\pngs\king_black.png"),
+            3: pygame.image.load("Assignment2/code/pngs/king_red.png"),
+            2: pygame.image.load("Assignment2/code/pngs/general_red.png"),
+            1: pygame.image.load("Assignment2/code/pngs/soldier_red.png"),
+            -1: pygame.image.load("Assignment2/code/pngs/soldier_black.png"),
+            -2: pygame.image.load("Assignment2/code/pngs/general_black.png"),
+            -3: pygame.image.load("Assignment2/code/pngs/king_black.png"),
         }
 
         self.number_font = pygame.font.Font(None, 36)
