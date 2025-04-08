@@ -4,19 +4,26 @@ import time
 import random
 from collections import defaultdict
 import fenix
+from agent import Agent
 
-class Agent:
+
+class RandomAgent(Agent):
+    def act(self, state, remaining_time):
+        actions = state.actions()
+        if len(actions) == 0:
+            raise Exception("No action available.")
+        return random.choice(actions)
+
+class Agent_first:
     def __init__(self, player: int, depth: int = 3):
         self.player = player
         self.depth = depth
         self.prev_actions = []
 
     def act(self, state, remaining_time):
-        print(state.turn)
-        if state.turn < 3:
-            opening_moves = self._opening(state.turn)
-            if opening_moves:
-                return opening_moves
+        opening_moves = self._opening(state.turn)
+        if opening_moves:
+            return opening_moves
 
         # Plus de profondeur si le choix est isolé
         if state.turn > 10:
@@ -150,3 +157,6 @@ class Agent:
             fenix.FenixAction((6, 6), (6, 7), removed=frozenset())
         ]
         return openings[turn]
+
+
+all_agents = [RandomAgent, Agent_first,]
