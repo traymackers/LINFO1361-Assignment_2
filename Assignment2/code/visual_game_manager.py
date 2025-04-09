@@ -1,4 +1,4 @@
-import random_agent
+import past_agents
 import agent
 import fenix
 import pygame
@@ -387,15 +387,8 @@ class VisualGameManager:
 
 
 if __name__ == "__main__":
-<<<<<<< Updated upstream
-    agentA = agent.Agent(player=1, depth=3,method='alpha-beta')
-    randomAgent = random_agent.RandomAgent(player=-1)
-    game = VisualGameManager(agentA, randomAgent)
-    game.play()
-=======
     currentAgent = agent.Agent(player=1, depth=3)
     lastBestAgent = past_agents.all_agents[0](player=-1, depth=3)
     game = VisualGameManager(currentAgent, lastBestAgent)
     results = game.play()
     history_manager.update_history(red_agent=str(currentAgent),black_agent=str(lastBestAgent), winner=results[0], total_moves_red=results[1], total_moves_black=results[2], used_time_red=results[3], used_time_black=results[4])
->>>>>>> Stashed changes
