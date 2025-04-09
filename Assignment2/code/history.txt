@@ -1,0 +1,24 @@
+{
+    "AlphaBetaMax_vs_RandomAgent": {
+        "red_agent": "AlphaBetaMax",
+        "black_agent": "RandomAgent",
+        "wins_red": 0,
+        "wins_black": 0,
+        "average_moves_red": 7.5,
+        "average_moves_black": 7.5,
+        "total_games": 2,
+        "average_time_red": 35.049142937499994,
+        "average_time_black": 3.954760290999957
+    },
+    "AlphaBetaEvaluate_vs_RandomAgent": {
+        "red_agent": "AlphaBetaEvaluate",
+        "black_agent": "RandomAgent",
+        "wins_red": 2,
+        "wins_black": 0,
+        "average_moves_red": 5.0,
+        "average_moves_black": 5.0,
+        "total_games": 7,
+        "average_time_red": 13.212251314285693,
+        "average_time_black": 2.8531892428571513
+    }
+}
