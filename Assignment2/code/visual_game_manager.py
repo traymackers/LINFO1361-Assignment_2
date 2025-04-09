@@ -2,7 +2,6 @@ import random_agent
 import agent
 import fenix
 import pygame
-import sys
 import random
 import threading
 import time
@@ -406,6 +405,14 @@ class VisualGameManager:
 
         self.data = [self.winner,self.total_moves_red, self.total_moves_black, self.used_time_red, self.used_time_black]
 
+        # Appel à la mise à jour des poids si l'agent rouge est de type Agent
+        if isinstance(self.red_agent, agent.Agent):
+            self.red_agent.update_multipliers_after_game(won=self.winner == 1)
+
+        if isinstance(self.black_agent, agent.Agent):
+            self.black_agent.update_multipliers_after_game(won=self.winner == -1)
+
+
         pygame.quit()
         
         return self.data
@@ -414,7 +421,7 @@ class VisualGameManager:
 
 if __name__ == "__main__":
     currentAgent = agent.Agent(player=1, depth=3)
-    lastBestAgent = past_agents.all_agents[0](player=-1, depth=3)
+    lastBestAgent = past_agents.all_agents[2](player=-1, depth=3)
     game = VisualGameManager(currentAgent, lastBestAgent)
     results = game.play()
     history_manager.update_history(red_agent=str(currentAgent),black_agent=str(lastBestAgent), winner=results[0], total_moves_red=results[1], total_moves_black=results[2], used_time_red=results[3], used_time_black=results[4])

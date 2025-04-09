@@ -1,6 +1,6 @@
 import sys
+
 sys.stdout.reconfigure(encoding="utf-8")
-import os
 import math
 import random
 import fenix
@@ -15,35 +15,31 @@ class Agent:
         self.thresh_lategame = 25
 
         self.mult = {
-            "early": {
-                "pieces": 1,
-                "mobility": 0.1,
-                "king_safety": 0.3,
-                "king_threat": 0.5,
-                "captures": 1,
-            },
-            "mid": {
-                "pieces": 1,
-                "mobility": 0.1,
-                "king_safety": 2,
-                "king_threat": 1,
-                "captures": 2,
-            },
-            "late": {
-                "pieces": 0.7,
-                "mobility": 0.1,
-                "king_safety": 0.5,
-                "king_threat": 1,
-                "captures": 1.2,
-            },
+            "early": self._random_weights(),
+            "mid": self._random_weights(),
+            "late": self._random_weights(),
         }
 
-        self.score_contributions = {"pieces": [], "mobility": [], "king_safety": [], "king_threat": [], "captures": []}
+        self.score_contributions = {
+            "pieces": [],
+            "mobility": [],
+            "king_safety": [],
+            "king_threat": [],
+            "captures": [],
+        }
         self.last_turn_scores = []
 
+    def _random_weights(self):
+        return {
+            "pieces": round(random.uniform(0.5, 2.0), 2),
+            "mobility": round(random.uniform(0.05, 0.5), 3),
+            "king_safety": round(random.uniform(0.5, 3.0), 2),
+            "king_threat": round(random.uniform(0.5, 3.0), 2),
+            "captures": round(random.uniform(0.5, 3.0), 2),
+        }
+
     def __str__(self):
-        return "AlphaBetaEvaluate"
-        return 'AlphaBeta2.0'
+        return "AlphaBetaWeights"
 
     def act(self, state, remaining_time):
         print(f"=== Tour n°{state.turn} ===")
@@ -63,11 +59,13 @@ class Agent:
         best_action = None
 
         more_depth = 0
-        
+
         if len(state.actions()) <= 5:
             more_depth += 1
 
-        print(f'    Analyse des possibilités avec une profondeur de {self.depth - 1 + more_depth}')
+        print(
+            f"    Analyse des possibilités avec une profondeur de {self.depth - 1 + more_depth}"
+        )
         for action in self._ordered_actions(state):
             value = self._opponent_turn_min(
                 state,
@@ -96,32 +94,6 @@ class Agent:
             f"    Meilleur coup final = {best_action} avec une valeur de {best_value}"
         )
         return best_action
-    
-    # --- DEPTH CALCULATOR ---------------------------------------------------
-    """
-    calcule une pronfondeur qui s'adapte en fonction 
-    du nombre de pièces restantes sur le plateau et du temps restant
-
-    diminuer la valeur absolue de k signifie augmenter la vitesse de l'exponentielle
-    """
-    def depth_calculator(self, pieces : int, board: tuple, ini_time ,remaining_time):
-        print(str(pieces) + " " + str(board))
-        ini_pieces = (board[0]-1)*(board[1]-1)
-
-        depth = ini_pieces//pieces - 1
-
-        # Moins il reste de temps, moins le facteur est grand
-        time_factor = remaining_time/ini_time
-        time_factor = max(0, min(1, time_factor))
-
-        k = 1.6 #variable pour ajuster la vitesse de l'exponentielle
-        depth_raw = math.floor(math.exp((ini_pieces / pieces) / k))-1
-
-        depth = int(depth_raw * time_factor)
-
-        #print("current depth = " + str(depth))
-        return depth 
-    
 
     # --- DEPTH CALCULATOR ---------------------------------------------------
     """
@@ -130,24 +102,50 @@ class Agent:
 
     diminuer la valeur absolue de k signifie augmenter la vitesse de l'exponentielle
     """
-    def depth_calculator(self, pieces : int, board: tuple, ini_time ,remaining_time):
-        print(str(pieces) + " " + str(board))
-        ini_pieces = (board[0]-1)*(board[1]-1)
 
-        depth = ini_pieces//pieces - 1
+    def depth_calculator(self, pieces: int, board: tuple, ini_time, remaining_time):
+        print(str(pieces) + " " + str(board))
+        ini_pieces = (board[0] - 1) * (board[1] - 1)
+
+        depth = ini_pieces // pieces - 1
 
         # Moins il reste de temps, moins le facteur est grand
-        time_factor = remaining_time/ini_time
+        time_factor = remaining_time / ini_time
         time_factor = max(0, min(1, time_factor))
 
-        k = 1.6 #variable pour ajuster la vitesse de l'exponentielle
-        depth_raw = math.floor(math.exp((ini_pieces / pieces) / k))-1
+        k = 1.6  # variable pour ajuster la vitesse de l'exponentielle
+        depth_raw = math.floor(math.exp((ini_pieces / pieces) / k)) - 1
 
         depth = int(depth_raw * time_factor)
 
-        #print("current depth = " + str(depth))
+        # print("current depth = " + str(depth))
         return depth
 
+    # --- DEPTH CALCULATOR ---------------------------------------------------
+    """
+    calcule une pronfondeur qui s'adapte en fonction 
+    du nombre de pièces restantes sur le plateau et du temps restant
+
+    diminuer la valeur absolue de k signifie augmenter la vitesse de l'exponentielle
+    """
+
+    def depth_calculator(self, pieces: int, board: tuple, ini_time, remaining_time):
+        print(str(pieces) + " " + str(board))
+        ini_pieces = (board[0] - 1) * (board[1] - 1)
+
+        depth = ini_pieces // pieces - 1
+
+        # Moins il reste de temps, moins le facteur est grand
+        time_factor = remaining_time / ini_time
+        time_factor = max(0, min(1, time_factor))
+
+        k = 1.6  # variable pour ajuster la vitesse de l'exponentielle
+        depth_raw = math.floor(math.exp((ini_pieces / pieces) / k)) - 1
+
+        depth = int(depth_raw * time_factor)
+
+        # print("current depth = " + str(depth))
+        return depth
 
     # --- ÉVALUATION ---------------------------------------------------------
 
@@ -177,37 +175,32 @@ class Agent:
     def update_multipliers_after_game(self, won: bool):
         impact = 1.05 if won else 0.95
         print(f"\n🧠 Ajustement des multiplicateurs — Victoire : {won}")
-        
+
         for scores in self.last_turn_scores:
             for key, val in scores.items():
                 self.score_contributions[key].append(val)
 
         if self.last_turn_scores:
             for key in self.mult["mid"]:
-                avg_score = sum(self.score_contributions[key]) / len(self.score_contributions[key])
+                avg_score = sum(self.score_contributions[key]) / len(
+                    self.score_contributions[key]
+                )
                 adjustment = impact if avg_score > 0 else 1
                 self.mult["mid"][key] *= adjustment
                 print(f"    {key}: nouveau poids = {self.mult['mid'][key]:.3f}")
-        
+
         self.last_turn_scores.clear()
         for key in self.score_contributions:
             self.score_contributions[key].clear()
         self.log_weights_to_file(won)
 
-
-
     def log_weights_to_file(self, won: bool, path="weights.txt"):
-        """
-        Enregistre les pondérations actuelles dans un fichier texte après une partie.
-        Crée le fichier s'il n'existe pas.
-        """
-        weights = self.mult["mid"]
         with open(path, "a", encoding="utf-8") as f:
             f.write(f"winner={1 if won else 0} ")
-            f.write(" ".join([f"{k}={round(v, 3)}" for k, v in weights.items()]))
+            for phase in ["early", "mid", "late"]:
+                for key, val in self.mult[phase].items():
+                    f.write(f"{phase}_{key}={round(val, 3)} ")
             f.write("\n")
-
-
 
     def _pieces_score(self, state, player):
         score = 0
