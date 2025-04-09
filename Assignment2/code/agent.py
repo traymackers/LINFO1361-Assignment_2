@@ -59,10 +59,8 @@ class Agent:
         best_value = -math.inf
         best_action = None
 
-        more_depth = 0
-
-        if len(state.actions()) <= 5:
-            more_depth += 1
+        total_pieces = state._has_piece(1) + state._has_piece(-1)
+        more_depth = self.depth_calculator(total_pieces, state.dim, 300, remaining_time)
 
         print(
             f"    Analyse des possibilités avec une profondeur de {self.depth - 1 + more_depth}"
@@ -177,24 +175,9 @@ class Agent:
             value = piece
             mult = 1 if piece * player > 0 else -1
             base = value**2
-            base += self._position_bonus(pos, player) * 0.5
             score += mult * base
         return score
-
-    def _position_bonus(self, pos, player):
-        row, col = pos
-        dimension = (7, 8)
-        is_center_bonus = (
-            3 - abs((dimension[0] // 2) - row) - abs((dimension[1] // 2) - col)
-        )
-        territory_bonus = (
-            0.5
-            if (player == 1 and row > dimension[0] // 2)
-            or (player == -1 and row < dimension[0] // 2)
-            else 0
-        )
-        return is_center_bonus + territory_bonus
-
+    
     def _mobility(self, state, player):
         temp = state.current_player
         state.current_player = player
