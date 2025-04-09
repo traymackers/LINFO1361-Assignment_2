@@ -74,7 +74,7 @@ class VisualGameManager:
         self.time_start_thread = time.perf_counter_ns()
 
         self.used_time_red = 0
-        self_used_time_black = 0
+        self.used_time_black = 0
 
         self.remaining_time_red = total_time
         self.remaining_time_black = total_time
@@ -174,72 +174,77 @@ class VisualGameManager:
         self.agent_action = agent.act(deepcopy(self.state), remaining_time)
 
     def update(self):
-        if (
-            self.state.is_terminal()
-            or self.remaining_time_red <= 0
-            or self.remaining_time_black <= 0
-        ):
+        # Vérifie les conditions de fin : victoire ou temps dépassé
+        if self.state.is_terminal():
             self.winner = self.state.utility(1)
+        elif self.remaining_time_red <= 0:
+            self.remaining_time_red = 0
+            self.winner = -1  # Rouge perd par dépassement de temps
+        elif self.remaining_time_black <= 0:
+            self.remaining_time_black = 0
+            self.winner = 1  # Noir perd par dépassement de temps
 
-            if self.winner == 0:
-                if self.remaining_time_red <= 0:
-                    self.winner = -1
-                elif self.remaining_time_black <= 0:
-                    self.winner = 1
-
+        # Si le jeu est fini, on vide les actions mais on ne ferme pas
+        if self.winner is not None:
             self.actions = []
             self.selected_actions = []
             self.selected_id = 0
             self.selected_action = None
-        else:
-            if not self.actions:
-                self.actions = self.state.actions()
-            if self.selected_action:
+            return  # Met le jeu en pause sans quitter
 
-                if self.state.to_move() == 1:
-                    self.remaining_time_red -= (
-                        time.perf_counter_ns() - self.start_thinking_time
-                    ) * 1e-9
-                    self.total_moves_red += 1
-                else:
-                    self.remaining_time_black -= (
-                        time.perf_counter_ns() - self.start_thinking_time
-                    ) * 1e-9
-                    self.total_moves_black += 1
+        # Génère les actions possibles si nécessaire
+        if not self.actions:
+            self.actions = self.state.actions()
 
-                if self.selected_action not in self.actions:
-                    raise ValueError("Invalid action")
+        # Si une action a été choisie
+        if self.selected_action:
+            if self.state.to_move() == 1:
+                self.remaining_time_red -= (
+                    time.perf_counter_ns() - self.start_thinking_time
+                ) * 1e-9
+                self.remaining_time_red = max(0, self.remaining_time_red)
+                self.total_moves_red += 1
+            else:
+                self.remaining_time_black -= (
+                    time.perf_counter_ns() - self.start_thinking_time
+                ) * 1e-9
+                self.remaining_time_black = max(0, self.remaining_time_black)
+                self.total_moves_black += 1
 
-                self.state = self.state.result(self.selected_action)
-                self.actions = self.state.actions()
-                self.selected_actions = []
-                self.selected_id = 0
-                self.selected_action = None
+            if self.selected_action not in self.actions:
+                raise ValueError("Invalid action")
 
-                self.human_to_play = (
-                    self.red_agent is None and self.state.to_move() == 1
-                ) or (self.black_agent is None and self.state.to_move() == -1)
-                self.agent_thread = None
+            self.state = self.state.result(self.selected_action)
+            self.actions = self.state.actions()
+            self.selected_actions = []
+            self.selected_id = 0
+            self.selected_action = None
 
-                self.start_thinking_time = time.perf_counter_ns()
+            self.human_to_play = (
+                self.red_agent is None and self.state.to_move() == 1
+            ) or (self.black_agent is None and self.state.to_move() == -1)
+            self.agent_thread = None
 
-            if (
-                not self.human_to_play
-                and self.agent_thread is None
-                and not self.state.is_terminal()
-            ):
-                self.agent_thread = threading.Thread(target=self._agent_thread)
-                self.agent_thread.start()
-                self.time_start_thread = time.perf_counter_ns()
+            self.start_thinking_time = time.perf_counter_ns()
 
-            if (
-                not self.human_to_play
-                and self.agent_thread is not None
-                and not self.agent_thread.is_alive()
-                and time.perf_counter_ns() - self.time_start_thread
-                >= self.min_agent_play_time * 1e9
-            ):
-                self.selected_action = self.agent_action
+        # Lance le thread agent si c'est à lui de jouer
+        if (
+            not self.human_to_play
+            and self.agent_thread is None
+            and not self.state.is_terminal()
+        ):
+            self.agent_thread = threading.Thread(target=self._agent_thread)
+            self.agent_thread.start()
+            self.time_start_thread = time.perf_counter_ns()
+
+        # Quand l'agent a fini et a attendu le temps minimal, on applique son action
+        if (
+            not self.human_to_play
+            and self.agent_thread is not None
+            and not self.agent_thread.is_alive()
+            and time.perf_counter_ns() - self.time_start_thread >= self.min_agent_play_time * 1e9
+        ):
+            self.selected_action = self.agent_action
 
     def _draw_board(self):
         for i in range(self.dim[0]):
@@ -409,8 +414,7 @@ class VisualGameManager:
 
 if __name__ == "__main__":
     currentAgent = agent.Agent(player=1, depth=3)
-    lastBestAgent = past_agents.all_agents[-1](player=-1, depth=3)
-    print(str(lastBestAgent))
+    lastBestAgent = past_agents.all_agents[0](player=-1, depth=3)
     game = VisualGameManager(currentAgent, lastBestAgent)
     results = game.play()
     history_manager.update_history(red_agent=str(currentAgent),black_agent=str(lastBestAgent), winner=results[0], total_moves_red=results[1], total_moves_black=results[2], used_time_red=results[3], used_time_black=results[4])

@@ -1,3 +1,4 @@
+import history_manager
 import fenix
 import time
 from copy import deepcopy
@@ -10,7 +11,7 @@ class TextGameManager:
         self.agent_2 = agent_2
         self.remaining_time_2 = time_limit
 
-        self.dim = (7, 9)
+        self.dim = (7, 8)
         self.display = display
 
     def play(self):
@@ -71,3 +72,25 @@ class TextGameManager:
             if self.display:
                 print(f"Player -1 ran out of time.")
             return 1, -1
+
+
+if __name__ == "__main__":
+    import agent
+    import past_agents
+
+    currentAgent = agent.Agent(player=1, depth=3)
+    lastBestAgent = past_agents.all_agents[-1](player=-1, depth=3)
+    print(str(lastBestAgent))
+
+    game = TextGameManager(currentAgent, lastBestAgent)
+    results = game.play()
+
+    history_manager.update_history(
+        red_agent=str(currentAgent),
+        black_agent=str(lastBestAgent),
+        winner=results[0],
+        total_moves_red=results[1],
+        total_moves_black=results[2],
+        used_time_red=game.remaining_time_1,
+        used_time_black=game.remaining_time_2,
+    )
