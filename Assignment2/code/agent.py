@@ -19,6 +19,7 @@ class Agent:
             "mid": self._random_weights(),
             "late": self._random_weights(),
         }
+        print(f'Partie d\'analyse avec ces poids: {self.mult}')
 
         self.score_contributions = {
             "pieces": [],
@@ -31,11 +32,11 @@ class Agent:
 
     def _random_weights(self):
         return {
-            "pieces": round(random.uniform(0.5, 2.0), 2),
-            "mobility": round(random.uniform(0.05, 0.5), 3),
-            "king_safety": round(random.uniform(0.5, 3.0), 2),
-            "king_threat": round(random.uniform(0.5, 3.0), 2),
-            "captures": round(random.uniform(0.5, 3.0), 2),
+            "pieces": round(random.uniform(0, 3.0), 2),
+            "mobility": round(random.uniform(0, 3), 3),
+            "king_safety": round(random.uniform(0, 3), 2),
+            "king_threat": round(random.uniform(0, 3), 2),
+            "captures": round(random.uniform(0, 3), 2),
         }
 
     def __str__(self):
@@ -96,38 +97,6 @@ class Agent:
         return best_action
 
     # --- DEPTH CALCULATOR ---------------------------------------------------
-    """
-    calcule une pronfondeur qui s'adapte en fonction 
-    du nombre de pièces restantes sur le plateau et du temps restant
-
-    diminuer la valeur absolue de k signifie augmenter la vitesse de l'exponentielle
-    """
-
-    def depth_calculator(self, pieces: int, board: tuple, ini_time, remaining_time):
-        print(str(pieces) + " " + str(board))
-        ini_pieces = (board[0] - 1) * (board[1] - 1)
-
-        depth = ini_pieces // pieces - 1
-
-        # Moins il reste de temps, moins le facteur est grand
-        time_factor = remaining_time / ini_time
-        time_factor = max(0, min(1, time_factor))
-
-        k = 1.6  # variable pour ajuster la vitesse de l'exponentielle
-        depth_raw = math.floor(math.exp((ini_pieces / pieces) / k)) - 1
-
-        depth = int(depth_raw * time_factor)
-
-        # print("current depth = " + str(depth))
-        return depth
-
-    # --- DEPTH CALCULATOR ---------------------------------------------------
-    """
-    calcule une pronfondeur qui s'adapte en fonction 
-    du nombre de pièces restantes sur le plateau et du temps restant
-
-    diminuer la valeur absolue de k signifie augmenter la vitesse de l'exponentielle
-    """
 
     def depth_calculator(self, pieces: int, board: tuple, ini_time, remaining_time):
         print(str(pieces) + " " + str(board))
@@ -174,7 +143,7 @@ class Agent:
 
     def update_multipliers_after_game(self, won: bool):
         impact = 1.05 if won else 0.95
-        print(f"\n🧠 Ajustement des multiplicateurs — Victoire : {won}")
+        print(f"\n Ajout des poids — Victoire : {won}")
 
         for scores in self.last_turn_scores:
             for key, val in scores.items():
@@ -187,7 +156,7 @@ class Agent:
                 )
                 adjustment = impact if avg_score > 0 else 1
                 self.mult["mid"][key] *= adjustment
-                print(f"    {key}: nouveau poids = {self.mult['mid'][key]:.3f}")
+                print(f"    {key}: {self.mult['mid'][key]:.3f}")
 
         self.last_turn_scores.clear()
         for key in self.score_contributions:
@@ -341,11 +310,12 @@ class Agent:
             fenix.FenixAction((5, 7), (6, 7), removed=frozenset()),
             fenix.FenixAction((1, 0), (0, 0), removed=frozenset()),
             fenix.FenixAction((6, 6), (6, 7), removed=frozenset()),
-            fenix.FenixAction((5, 0), (4, 0), removed=frozenset()),
-            fenix.FenixAction((1, 7), (2, 7), removed=frozenset()),
-            fenix.FenixAction((1, 4), (1, 3), removed=frozenset()),
-            fenix.FenixAction((5, 3), (5, 4), removed=frozenset()),
-            fenix.FenixAction((3, 2), (3, 1), removed=frozenset()),
-            fenix.FenixAction((2, 5), (2, 6), removed=frozenset()),
-        ]
+
+            fenix.FenixAction((2, 0), (3, 0), removed=frozenset()),
+            fenix.FenixAction((4, 7), (3, 7), removed=frozenset()),
+            fenix.FenixAction((1, 1), (2, 1), removed=frozenset()),
+            fenix.FenixAction((5, 6), (4, 6), removed=frozenset()),
+            fenix.FenixAction((0, 2), (1, 2), removed=frozenset()),
+            fenix.FenixAction((6, 5), (5, 5), removed=frozenset()),
+        ] 
         return openings[turn]
