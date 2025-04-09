@@ -43,6 +43,7 @@ class Agent:
 
     def __str__(self):
         return "AlphaBetaEvaluate"
+        return 'AlphaBeta2.0'
 
     def act(self, state, remaining_time):
         print(f"=== Tour n°{state.turn} ===")
@@ -61,12 +62,12 @@ class Agent:
         best_value = -math.inf
         best_action = None
 
-        total_pieces = state._has_piece(1) + state._has_piece(-1)
-        more_depth = self.depth_calculator(total_pieces, state.dim, 300, remaining_time) 
+        more_depth = 0
+        
+        if len(state.actions()) <= 5:
+            more_depth += 1
 
-        print(
-            f"    Analyse des possibilités avec une profondeur de {self.depth - 1 + more_depth}"
-        )
+        print(f'    Analyse des possibilités avec une profondeur de {self.depth - 1 + more_depth}')
         for action in self._ordered_actions(state):
             value = self._opponent_turn_min(
                 state,
@@ -121,6 +122,32 @@ class Agent:
         #print("current depth = " + str(depth))
         return depth 
     
+
+    # --- DEPTH CALCULATOR ---------------------------------------------------
+    """
+    calcule une pronfondeur qui s'adapte en fonction 
+    du nombre de pièces restantes sur le plateau et du temps restant
+
+    diminuer la valeur absolue de k signifie augmenter la vitesse de l'exponentielle
+    """
+    def depth_calculator(self, pieces : int, board: tuple, ini_time ,remaining_time):
+        print(str(pieces) + " " + str(board))
+        ini_pieces = (board[0]-1)*(board[1]-1)
+
+        depth = ini_pieces//pieces - 1
+
+        # Moins il reste de temps, moins le facteur est grand
+        time_factor = remaining_time/ini_time
+        time_factor = max(0, min(1, time_factor))
+
+        k = 1.6 #variable pour ajuster la vitesse de l'exponentielle
+        depth_raw = math.floor(math.exp((ini_pieces / pieces) / k))-1
+
+        depth = int(depth_raw * time_factor)
+
+        #print("current depth = " + str(depth))
+        return depth
+
 
     # --- ÉVALUATION ---------------------------------------------------------
 
