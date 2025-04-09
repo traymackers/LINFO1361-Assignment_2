@@ -1,24 +1,68 @@
 {
-    "AlphaBetaEvaluate_vs_RandomAgent": {
-        "red_agent": "AlphaBetaEvaluate",
+    "AlphaBetaWeights_vs_AlphaBeta": {
+        "red_agent": "AlphaBetaWeights",
+        "black_agent": "AlphaBeta",
+        "wins_red": 0,
+        "wins_black": 3,
+        "average_moves_red": 6.0,
+        "average_moves_black": 5.0,
+        "total_games": 3,
+        "average_time_red": 60.0,
+        "average_time_black": 58.66847387566667
+    },
+    "AlphaBetaWeights_vs_RandomAgent": {
+        "red_agent": "AlphaBetaWeights",
         "black_agent": "RandomAgent",
         "wins_red": 3,
-        "wins_black": 0,
-        "average_moves_red": 22.333333333333332,
-        "average_moves_black": 22.333333333333332,
-        "total_games": 3,
-        "average_time_red": 64.22455543333335,
-        "average_time_black": 11.787908166666645
+        "wins_black": 12,
+        "average_moves_red": 8.2,
+        "average_moves_black": 7.4,
+        "total_games": 15,
+        "average_time_red": 52.46012690540001,
+        "average_time_black": 1.8279828640666769
     },
-    "AlphaBetaEvaluate_vs_AlphaBetaPlus": {
-        "red_agent": "AlphaBetaEvaluate",
-        "black_agent": "AlphaBetaPlus",
-        "wins_red": 1,
-        "wins_black": 1,
-        "average_moves_red": 11.333333333333334,
-        "average_moves_black": 10.333333333333334,
-        "total_games": 3,
-        "average_time_red": 53.123665966666685,
-        "average_time_black": 174.34245920000004
+    "AlphaChad1_vs_AlphaBeta_MCTS": {
+        "red_agent": "AlphaChad1",
+        "black_agent": "AlphaBeta_MCTS",
+        "wins_red": 3,
+        "wins_black": 3,
+        "average_moves_red": 25.857142857142858,
+        "average_moves_black": 25.285714285714285,
+        "total_games": 7,
+        "average_time_red": 220.35024189200004,
+        "average_time_black": 36.468643994142795
+    },
+    "Alpha_no_depth_vs_Alpha_variable_depth": {
+        "red_agent": "Alpha_no_depth",
+        "black_agent": "Alpha_variable_depth",
+        "wins_red": 0,
+        "wins_black": 13,
+        "average_moves_red": 11.538461538461538,
+        "average_moves_black": 10.538461538461538,
+        "total_games": 13,
+        "average_time_red": 299.38804844546155,
+        "average_time_black": 42.282799041923084
+    },
+    "Alpha_no_depth2_vs_Alpha_variable_depth": {
+        "red_agent": "Alpha_no_depth2",
+        "black_agent": "Alpha_variable_depth",
+        "wins_red": 4,
+        "wins_black": 0,
+        "average_moves_red": 14.75,
+        "average_moves_black": 14.75,
+        "total_games": 4,
+        "average_time_red": 73.04963596825002,
+        "average_time_black": 131.31229118725
+    },
+    "Alpha_no_depth2_vs_Alpha_variable_depth2": {
+        "red_agent": "Alpha_no_depth2",
+        "black_agent": "Alpha_variable_depth2",
+        "wins_red": 15,
+        "wins_black": 15,
+        "average_moves_red": 22.5,
+        "average_moves_black": 21.966666666666665,
+        "total_games": 30,
+        "average_time_red": 94.02941471233336,
+        "average_time_black": 107.00700575286666
     }
 }

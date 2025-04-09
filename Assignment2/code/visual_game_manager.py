@@ -190,6 +190,7 @@ class VisualGameManager:
             self.selected_actions = []
             self.selected_id = 0
             self.selected_action = None
+            self.running = False
             return  # Met le jeu en pause sans quitter
 
         # Génère les actions possibles si nécessaire
@@ -407,7 +408,6 @@ class VisualGameManager:
         self.data = [self.winner,self.total_moves_red, self.total_moves_black, self.used_time_red, self.used_time_black]
 
         pygame.quit()
-        
         return self.data
 
 

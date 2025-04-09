@@ -19,7 +19,18 @@ Answer to the questions by adding text in the boxes. You may answer in either \t
 As a first step, provide a detailed explanation of the design of your agent. The important thing here is to describe what you have implemented and why you have chosen this particular approach. Explain all the tricks that you have coded and why you think they are good for the game of Fenix.
 
 \begin{answers}[10cm]
-    % TODO explain your agent here
+    Notre agent est basé sur l'algorithme Alpha-Beta. 
+
+    Les 5 premiers mouvements, où l'on crée le Roi et les Généraux, sont toujours prédéfinis. 
+
+    L'agent adapte la profondeur de ses recherches en fonction du nombre de pièces restantes sur le plateau ainsi que du temps restant. Ce processus suit une fonction continue jusqu'à ce que le timer tombe en dessous des 20 secondes, après quoi, une nouvelle fonction fixe la profondeur de recherche.
+
+    Pour prendre des décisions, l'agent considère tous les coups qu'il peut jouer et, pour chacun d'entre eux, évalue leur intérêt en leur attribuant une valeur. Il choisi ensuite le coup avec la meilleure valeur.
+    
+    L'évaluation d'un état se base sur différents critères : 
+
+    Le premier 'pieces score' donne un score correspondant du gain matériel des pièces en jeu. 
+
 \end{answers}
 
 \begin{answers}[23cm]
