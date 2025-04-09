@@ -4,7 +4,6 @@ import time
 import random
 from collections import defaultdict
 import fenix
-from agent import Agent
 
 
 class RandomAgent:

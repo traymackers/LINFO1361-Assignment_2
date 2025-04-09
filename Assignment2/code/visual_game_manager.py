@@ -189,7 +189,10 @@ class VisualGameManager:
             self.selected_actions = []
             self.selected_id = 0
             self.selected_action = None
-            return  # Met le jeu en pause sans quitter
+            self.running = False
+            return
+
+
 
         # Génère les actions possibles si nécessaire
         if not self.actions:
@@ -405,13 +408,6 @@ class VisualGameManager:
 
         self.data = [self.winner,self.total_moves_red, self.total_moves_black, self.used_time_red, self.used_time_black]
 
-        # Appel à la mise à jour des poids si l'agent rouge est de type Agent
-        if isinstance(self.red_agent, agent.Agent):
-            self.red_agent.update_multipliers_after_game(won=self.winner == 1)
-
-        if isinstance(self.black_agent, agent.Agent):
-            self.black_agent.update_multipliers_after_game(won=self.winner == -1)
-
 
         pygame.quit()
         
@@ -421,6 +417,7 @@ class VisualGameManager:
 
 if __name__ == "__main__":
     currentAgent = agent.Agent(player=1, depth=3)
+    lastBestAgent = past_agents.all_agents[random.randint(0,len(past_agents.all_agents)-1)](player=-1, depth=3)
     lastBestAgent = past_agents.all_agents[2](player=-1, depth=3)
     game = VisualGameManager(currentAgent, lastBestAgent)
     results = game.play()

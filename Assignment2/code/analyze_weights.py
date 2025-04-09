@@ -18,11 +18,11 @@ def analyze_weights(file="weights.txt"):
                 sums[key] += float(val)
                 counts[key] += 1
 
-    print("📊 Moyennes des poids gagnants :")
+    print("Moyennes des poids gagnants :")
     phases = ["early", "mid", "late"]
     metrics = ["pieces", "mobility", "king_safety", "king_threat", "captures"]
     for phase in phases:
-        print(f"\n🔹 {phase.capitalize()}:")
+        print(f"\n{phase.capitalize()}:")
         for metric in metrics:
             k = f"{phase}_{metric}"
             if counts[k]:

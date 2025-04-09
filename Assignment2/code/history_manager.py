@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 def update_history(red_agent: str, black_agent: str, winner: int, total_moves_red: int, total_moves_black : int, used_time_red: float, used_time_black: float):
-
+    print("hey")
     history_file = Path("Assignment2/code/history.txt")
     history = {}
 

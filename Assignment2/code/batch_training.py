@@ -3,12 +3,15 @@ from agent import Agent
 from past_agents import AlphaBeta
 from visual_game_manager import VisualGameManager
 import history_manager
+import random
+import past_agents
 
 def run_game(game_id):
     red_agent = Agent(player=1, depth=3)
-    black_agent = AlphaBeta(player=-1, depth=3)
+    # black_agent = past_agents.all_agents[random.randint(0, len(past_agents.all_agents)-1)](player=-1, depth=3)
+    black_agent = past_agents.all_agents[2](player=-1, depth=3)
 
-    game = VisualGameManager(red_agent, black_agent, total_time=60, min_agent_play_time=0.2)
+    game = VisualGameManager(red_agent, black_agent, total_time=150, min_agent_play_time=0.2)
     results = game.play()
 
     history_manager.update_history(
@@ -22,8 +25,8 @@ def run_game(game_id):
     )
 
 if __name__ == "__main__":
-    NUM_GAMES = 10  # ← change ici pour faire plus de parties
+    NUM_GAMES = 16  # ← change ici pour faire plus de parties
 
     # Lance les parties en parallèle
-    with multiprocessing.Pool(processes=4) as pool:  # ← tu peux ajuster à ton nombre de cœurs
+    with multiprocessing.Pool(processes=8) as pool:  # ← tu peux ajuster à ton nombre de cœurs
         pool.map(run_game, range(NUM_GAMES))
