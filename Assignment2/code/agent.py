@@ -25,8 +25,14 @@ class Agent:
         best_value = -math.inf
         best_action = None
 
+        more_depth = 0
+        
+        if len(state.actions()) <= 5:
+            more_depth += 1
+
+        print(f'    Analyse des possibilités avec une profondeur de {self.depth - 1 + more_depth}')
         for action in self._ordered_actions(state):
-            value = self._opponent_turn_min(state, state.result(action), self.depth - 1, -math.inf, math.inf)
+            value = self._opponent_turn_min(state, state.result(action), self.depth - 1 + more_depth, -math.inf, math.inf)
             if action in self.prev_actions:
                 value -= 3
 
@@ -52,12 +58,12 @@ class Agent:
 
         total_score = score_pieces + score_mobility + score_king_safety
 
-        if random.randint(1,50000) == 666:
-            print(f'    Évaluation du tour n°{next_state.turn}')
-            print(f'        Score pièce:        {score_pieces}')
-            print(f'        Score mobilité:     {score_mobility}')
-            print(f'        Score sécurité roi: {score_king_safety}')
-            print(f'        Score total:        {total_score}')
+        if random.randint(1,25000) == 666:
+            print(f'        Évaluation du tour n°{next_state.turn}')
+            print(f'            Score pièce:        {score_pieces}')
+            print(f'            Score mobilité:     {score_mobility}')
+            print(f'            Score sécurité roi: {score_king_safety}')
+            print(f'            Score total:        {total_score}')
         
         return total_score
 
@@ -142,7 +148,19 @@ class Agent:
 
     def _ordered_actions(self, state):
         # Trier les states à explorer en fonction de leur évaluation
-        return sorted(state.actions(), key=lambda a: self.evaluate(state, state.result(a), self.player), reverse=True)
+        actions = state.actions()
+        scores = []
+        final_actions = []
+
+        for action in actions:
+            score = self.evaluate(state, state.result(action), self.player)
+            scores.append((score, action))
+        scores.sort(reverse=True)
+
+        for action in scores:
+            final_actions.append(action[1])
+
+        return final_actions
 
     def _opening(self, turn):
         # Place le roi dans le coin (haut gauche ou bas droit)

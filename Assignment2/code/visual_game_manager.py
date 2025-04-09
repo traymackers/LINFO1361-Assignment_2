@@ -1,4 +1,4 @@
-import past_agents
+import random_agent
 import agent
 import fenix
 import pygame
@@ -6,7 +6,9 @@ import sys
 import random
 import threading
 import time
+import past_agents
 from copy import deepcopy
+import history_manager
 
 
 class VisualGameManager:
@@ -47,6 +49,8 @@ class VisualGameManager:
             total_time (int, optional): Total time per player in seconds (default: 300).
             min_agent_play_time (float, optional): Minimum agent thinking time (default: 0.5s).
         """
+        self.total_time = total_time
+
         self.dim = (7, 8)
         self.min_agent_play_time = min_agent_play_time
 
@@ -69,8 +73,16 @@ class VisualGameManager:
         self.agent_action = None
         self.time_start_thread = time.perf_counter_ns()
 
+        self.used_time_red = 0
+        self_used_time_black = 0
+
         self.remaining_time_red = total_time
         self.remaining_time_black = total_time
+
+        self.total_moves_red = 0
+        self.total_moves_black = 0
+        
+        self.data = {}
 
         pygame.init()
         self.screen = pygame.display.set_mode(
@@ -79,12 +91,12 @@ class VisualGameManager:
         pygame.display.set_caption("Fenix")
 
         self.pieces_images = {
-            3: pygame.image.load("Assignment2\code\pngs\king_red.png"),
-            2: pygame.image.load("Assignment2\code\pngs\general_red.png"),
-            1: pygame.image.load("Assignment2\code\pngs\soldier_red.png"),
-            -1: pygame.image.load("Assignment2\code\pngs\soldier_black.png"),
-            -2: pygame.image.load("Assignment2\code\pngs\general_black.png"),
-            -3: pygame.image.load("Assignment2\code\pngs\king_black.png"),
+            3: pygame.image.load("Assignment2/code/pngs/king_red.png"),
+            2: pygame.image.load("Assignment2/code/pngs/general_red.png"),
+            1: pygame.image.load("Assignment2/code/pngs/soldier_red.png"),
+            -1: pygame.image.load("Assignment2/code/pngs/soldier_black.png"),
+            -2: pygame.image.load("Assignment2/code/pngs/general_black.png"),
+            -3: pygame.image.load("Assignment2/code/pngs/king_black.png"),
         }
 
         self.number_font = pygame.font.Font(None, 36)
@@ -188,10 +200,12 @@ class VisualGameManager:
                     self.remaining_time_red -= (
                         time.perf_counter_ns() - self.start_thinking_time
                     ) * 1e-9
+                    self.total_moves_red += 1
                 else:
                     self.remaining_time_black -= (
                         time.perf_counter_ns() - self.start_thinking_time
                     ) * 1e-9
+                    self.total_moves_black += 1
 
                 if self.selected_action not in self.actions:
                     raise ValueError("Invalid action")
@@ -382,13 +396,21 @@ class VisualGameManager:
             self.draw()
             self.clock.tick(60)
 
+        self.used_time_red = self.total_time - self.remaining_time_red
+        self.used_time_black = self.total_time - self.remaining_time_black
+
+        self.data = [self.winner,self.total_moves_red, self.total_moves_black, self.used_time_red, self.used_time_black]
+
         pygame.quit()
-        sys.exit()
+        
+        return self.data
+
 
 
 if __name__ == "__main__":
     currentAgent = agent.Agent(player=1, depth=3)
-    lastBestAgent = past_agents.all_agents[0](player=-1, depth=3)
+    lastBestAgent = past_agents.all_agents[-1](player=-1, depth=3)
+    print(str(lastBestAgent))
     game = VisualGameManager(currentAgent, lastBestAgent)
     results = game.play()
     history_manager.update_history(red_agent=str(currentAgent),black_agent=str(lastBestAgent), winner=results[0], total_moves_red=results[1], total_moves_black=results[2], used_time_red=results[3], used_time_black=results[4])

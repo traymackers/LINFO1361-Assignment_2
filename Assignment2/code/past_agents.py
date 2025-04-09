@@ -7,7 +7,13 @@ import fenix
 from agent import Agent
 
 
-class RandomAgent(Agent):
+class RandomAgent:
+    def __init__(self, player: int, depth: int = 3):
+        self.player = player
+        self.depth = depth
+
+    def __str__(self):
+        return "RandomAgent"
     def act(self, state, remaining_time):
         actions = state.actions()
         if len(actions) == 0:
@@ -18,6 +24,9 @@ class AlphaBeta:
     def __init__(self, player: int, depth: int = 3):
         self.player = player
         self.depth = depth
+
+    def __str__(self):
+        return "AlphaBeta"
 
     def act(self, state, remaining_time):
         best_value = -math.inf
@@ -75,6 +84,9 @@ class AlphaBeta_MCTS:
         self.depth = depth
         self.method = method.lower()
         self.time_limit = time_limit
+
+    def __str__(self):
+        return "AlphaBeta_MCTS"
 
     def act(self, state, remaining_time):
         if self.method == 'alpha-beta':
@@ -213,11 +225,15 @@ class AlphaBetaPlus:
         self.player = player
         self.depth = depth
         self.prev_actions = []
+    
+    def __str__(self):
+        return "AlphaBetaPlus"
 
     def act(self, state, remaining_time):
-        opening_moves = self._opening(state.turn)
-        if opening_moves:
-            return opening_moves
+        if state.turn <= 3:
+            opening_moves = self._opening(state.turn)
+            if opening_moves:
+                return opening_moves
 
         # Plus de profondeur si le choix est isolé
         if state.turn > 10:
@@ -232,7 +248,6 @@ class AlphaBetaPlus:
                 if adjacent < 2:
                     self.depth += 1
 
-        print(f'=== Tour n°{state.turn} ===')
         best_value = -math.inf
         best_action = None
 
@@ -244,14 +259,10 @@ class AlphaBetaPlus:
             if value > best_value or (value == best_value and random.randint(1, 8) == 1):
                 best_value = value
                 best_action = action
-                print(f'Nouveau meilleur coup = {best_action}')
 
         self.prev_actions.append(best_action)
         if len(self.prev_actions) > 10:
             self.prev_actions.pop(0)
-
-        print(f'Meilleur coup final = {best_action}')
-        print(f'=== Fin du tour n°{state.turn} ===')
         return best_action
 
     # --- ÉVALUATION ---------------------------------------------------------
@@ -351,6 +362,5 @@ class AlphaBetaPlus:
             fenix.FenixAction((6, 6), (6, 7), removed=frozenset())
         ]
         return openings[turn]
-
 
 all_agents = [RandomAgent, AlphaBeta, AlphaBeta_MCTS, AlphaBetaPlus]
